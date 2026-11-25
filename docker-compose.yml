@@ -3,7 +3,7 @@ services:
         image: mcr.microsoft.com/mssql/server:2022-latest
         container_name: uc_sqlserver
         environment:
-            - ACCEPT-EULA=Y
+            - ACCEPT_EULA=Y
             - MSSQL_SA_PASSWORD=Password123!
         ports:
             - "1433:1433"
