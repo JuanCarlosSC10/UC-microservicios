@@ -1,5 +1,6 @@
 using Estudiantes.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Estudiantes.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EstudianteDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IEstudianteService, EstudianteService>();
 
 var app = builder.Build();
 
