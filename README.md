@@ -32,9 +32,9 @@ docker compose up -d --wait sqlserver
 
 **2. Levantar los 3 servicios en una terminal para cada uno
 
-dotnet run --project src/Estudiantes.API
-dotnet run --project src/Cursos.API
-dotnet run --project src/ApiGateway
+- dotnet run --project src/Estudiantes.API
+- dotnet run --project src/Cursos.API
+- dotnet run --project src/ApiGateway
 
 
 Abrir **    http://localhost:5120/swagger  **
