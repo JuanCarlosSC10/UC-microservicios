@@ -1,5 +1,5 @@
-services: 
-    sqlserver: 
+services:
+    sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         container_name: uc_sqlserver
         environment:
@@ -9,6 +9,45 @@ services:
             - "1433:1433"
         volumes:
             - sql_data:/var/opt/mssql
+        healthcheck:
+            test: ['CMD-SHELL', '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || exit 1']
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 20s
+
+    estudiantes-api:
+        build: ./src/Estudiantes.API
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=EstudiantesDb;User Id=sa;Password=Password123!;TrustServerCertificate=True
+        ports:
+            - "5092:8080"
+        depends_on:
+            sqlserver:
+                condition: service_healthy
+
+    cursos-api:
+        build: ./src/Cursos.API
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CursosDb;User Id=sa;Password=Password123!;TrustServerCertificate=True
+        ports:
+            - "5030:8080"
+        depends_on:
+            sqlserver:
+                condition: service_healthy
+
+    apigateway:
+        build: ./src/ApiGateway
+        environment:
+            - ReverseProxy__Clusters__cluster-estudiantes__Destinations__destino1__Address=http://estudiantes-api:8080
+            - ReverseProxy__Clusters__cluster-cursos__Destinations__destino1__Address=http://cursos-api:8080
+        ports:
+            - "5120:8080"
+        depends_on:
+            - estudiantes-api
+            - cursos-api
 
 volumes:
     sql_data:
